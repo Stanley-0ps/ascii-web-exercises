@@ -64,3 +64,23 @@ else
     echo -e "${RED}✘ FAIL: Expected length 6, got '$RESP_POST'${NC}"
 fi
 echo ""
+
+# Exercise 4: Basic Math API
+echo -e "${BLUE}[Exercise 4: /calculate]${NC}"
+# Test valid math
+RESP_MATH=$(curl -s "$SERVER_URL/calculate?op=add&a=12&b=8")
+if [[ "$RESP_MATH" == *"20"* ]]; then
+    echo -e "${GREEN}✔ PASS: 12 + 8 = 20 handled successfully${NC}"
+else
+    echo -e "${RED}✘ FAIL: Expected 20, got '$RESP_MATH'${NC}"
+fi
+
+# Test invalid input validation
+STATUS_MATH=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/calculate?op=multiply&a=abc&b=5")
+if [ "$STATUS_MATH" == "400" ]; then
+    echo -e "${GREEN}✔ PASS: Rejected non-integer values with Status 400 Bad Request${NC}"
+else
+    echo -e "${RED}✘ FAIL: Expected status 400 for bad parameters, got $STATUS_MATH${NC}"
+fi
+echo ""
+
