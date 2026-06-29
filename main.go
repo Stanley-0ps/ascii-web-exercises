@@ -8,6 +8,8 @@ import (
 	"strconv"
 )
 
+const validAPIKey = "secret123"
+
 func main() {
 	// registers the handler for the /ping route
 	http.HandleFunc("/ping", pingHandler)
@@ -16,6 +18,7 @@ func main() {
 	http.HandleFunc("/count", countHandler)
 	http.HandleFunc("/calculate", calculateHandler)
 	http.HandleFunc("/agent", agentHandler)
+	http.HandleFunc("/dashboard", dashboardHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -112,7 +115,18 @@ func calculateHandler(w http.ResponseWriter, r *http.Request) {
 func agentHandler(w http.ResponseWriter, r *http.Request) {
 	userAgent := r.Header.Get("User-Agent")
 	if userAgent == "" {
-		userAgent = "Unknown"
+		userAgent = "Unknown Device"
 	}
 	fmt.Fprintf(w, "You are visiting us using: %s", userAgent)
+}
+
+// dashboardHandler protects the dashboard using a simple API Key
+func dashboardHandler(w http.ResponseWriter, r *http.Request) {
+	apiKey := r.Header.Get("X-API-Key")
+
+	if apiKey != validAPIKey {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	fmt.Fprint(w, "welcome to the secure dashboard!")
 }
