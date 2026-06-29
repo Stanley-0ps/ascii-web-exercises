@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("/goodbye", goodbyeHandler)
 	http.HandleFunc("/count", countHandler)
 	http.HandleFunc("/calculate", calculateHandler)
+	http.HandleFunc("/agent", agentHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -105,4 +106,13 @@ func calculateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "Result: %d", result)
+}
+
+// agentHandler reads the User-Agent header and sends it back to the client
+func agentHandler(w http.ResponseWriter, r *http.Request) {
+	userAgent := r.Header.Get("User-Agent")
+	if userAgent == "" {
+		userAgent = "Unknown"
+	}
+	fmt.Fprintf(w, "You are visiting us using: %s", userAgent)
 }
