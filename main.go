@@ -19,6 +19,8 @@ func main() {
 	http.HandleFunc("/calculate", calculateHandler)
 	http.HandleFunc("/agent", agentHandler)
 	http.HandleFunc("/dashboard", dashboardHandler)
+	http.HandleFunc("/legacy", legacyHandler)
+	http.HandleFunc("/v2", v2Handler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -120,7 +122,7 @@ func agentHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "You are visiting us using: %s", userAgent)
 }
 
-// dashboardHandler protects the dashboard using a simple API Key
+// dashboardHandler protects the dashboard using an API key.
 func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	apiKey := r.Header.Get("X-API-Key")
 
@@ -128,5 +130,17 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	fmt.Fprint(w, "welcome to the secure dashboard!")
+
+	fmt.Fprint(w, "Welcome to the secure dashboard!")
+}
+
+
+// legacyHandler permanently redirects clients to the /v2 route
+func legacyHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/v2", http.StatusMovedPermanently)
+}
+
+// v2 serves as the new version of the endpoint
+func v2Handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "welcome to version 2")
 }

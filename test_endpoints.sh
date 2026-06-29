@@ -113,4 +113,23 @@ else
 fi
 echo ""
 
+# Exercise 7: Simple Redirector
+echo -e "${BLUE}[Exercise 7: /legacy -> /v2]${NC}"
+# Test redirect status
+REDIRECT_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/legacy")
+if [ "$REDIRECT_STATUS" == "301" ]; then
+    echo -e "${GREEN}✔ PASS: Route /legacy issues a 301 Permanent Redirect${NC}"
+else
+    echo -e "${RED}✘ FAIL: Expected redirect status 301, got $REDIRECT_STATUS${NC}"
+fi
+
+# Test following the location redirect
+RESP_REDIRECT=$(curl -s -L "$SERVER_URL/legacy")
+if [[ "$RESP_REDIRECT" == *"version 2"* ]]; then
+    echo -e "${GREEN}✔ PASS: Followed redirect pipeline to /v2 successfully${NC}"
+else
+    echo -e "${RED}✘ FAIL: Target redirection payload path failed. Got: '$RESP_REDIRECT'${NC}"
+fi
+
+echo -e "\n${BLUE}=== Testing Complete ===${NC}"
 
