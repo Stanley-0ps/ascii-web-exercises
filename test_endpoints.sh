@@ -94,3 +94,23 @@ else
 fi
 echo ""
 
+# Exercise 6: Secure Dashboard
+echo -e "${BLUE}[Exercise 6: /dashboard]${NC}"
+# Test unauthorized access
+STATUS_DASH_BAD=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/dashboard")
+if [ "$STATUS_DASH_BAD" == "401" ]; then
+    echo -e "${GREEN}✔ PASS: Missing API key blocked with Status 401 Unauthorized${NC}"
+else
+    echo -e "${RED}✘ FAIL: Expected status 401 for unauthorized traffic, got $STATUS_DASH_BAD${NC}"
+fi
+
+# Test authorized access
+RESP_DASH_GOOD=$(curl -s -H "X-API-Key: secret123" "$SERVER_URL/dashboard")
+if [[ "$RESP_DASH_GOOD" == *"Welcome"* ]]; then
+    echo -e "${GREEN}✔ PASS: Access granted with correct token header${NC}"
+else
+    echo -e "${RED}✘ FAIL: Correct token rejected. Response: '$RESP_DASH_GOOD'${NC}"
+fi
+echo ""
+
+
