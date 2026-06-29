@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
@@ -13,6 +14,7 @@ func main() {
 	http.HandleFunc("/hello", helloHandler)
 	http.HandleFunc("/goodbye", goodbyeHandler)
 	http.HandleFunc("/count", countHandler)
+	http.HandleFunc("/calculate", calculateHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -66,4 +68,41 @@ func countHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
+}
+
+// calculateHandler performs basic arithmethic using query parameters
+func calculateHandler(w http.ResponseWriter, r *http.Request) {
+	// read the query parameter
+	operations := r.URL.Query().Get("op")
+	aString := r.URL.Query().Get("a")
+	bString := r.URL.Query().Get("b")
+
+	a, err := strconv.Atoi(aString)
+	if err != nil {
+		http.Error(w, "Invalid value for 'a'", http.StatusBadRequest)
+		return
+	}
+
+	b, err := strconv.Atoi(bString)
+	if err != nil {
+		http.Error(w, "Invalid value for 'b'", http.StatusBadRequest)
+		return
+	}
+
+	var result int
+
+	switch operations {
+	case "add":
+		result = a + b
+	case "subtract":
+		result = a - b
+	case "multiply":
+		result = a * b
+
+	default:
+		http.Error(w, "Unknown operation", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "Result: %d", result)
 }
