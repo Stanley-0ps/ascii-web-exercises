@@ -45,3 +45,22 @@ else
     echo -e "${RED}✘ FAIL: POST request gave status $STATUS_CODE instead of 405${NC}"
 fi
 echo ""
+
+# Exercise 3: Text Counter
+echo -e "${BLUE}[Exercise 3: /count]${NC}"
+# Test GET
+RESP_GET=$(curl -s "$SERVER_URL/count")
+if [[ "$RESP_GET" == *"Send a POST request"* ]]; then
+    echo -e "${GREEN}✔ PASS: GET request displays instruction text${NC}"
+else
+    echo -e "${RED}✘ FAIL: Unexpected GET response '$RESP_GET'${NC}"
+fi
+
+# Test POST
+RESP_POST=$(curl -s -X POST -d "Golang" "$SERVER_URL/count")
+if [[ "$RESP_POST" == *"6"* ]]; then
+    echo -e "${GREEN}✔ PASS: POST request calculated length correctly ('Golang' = 6)${NC}"
+else
+    echo -e "${RED}✘ FAIL: Expected length 6, got '$RESP_POST'${NC}"
+fi
+echo ""
