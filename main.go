@@ -23,11 +23,24 @@ func main() {
 
 // pingHandler handles requests to the /ping route
 func pingHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "pong 🏓")
+	fmt.Fprint(w, "pong")
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, World!")
+	//Allow only GET requests.
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Read the "name" query parameter
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		name = "Guest"
+	}
+
+	// send the response
+	fmt.Fprintf(w, "Hello, %s!", name)
 }
 
 func goodbyeHandler(w http.ResponseWriter, r *http.Request) {
