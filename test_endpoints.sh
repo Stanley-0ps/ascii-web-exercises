@@ -84,3 +84,13 @@ else
 fi
 echo ""
 
+# Exercise 5: User-Agent Echo
+echo -e "${BLUE}[Exercise 5: /agent]${NC}"
+RESP_AGENT=$(curl -s -H "User-Agent: CustomTester/1.0" "$SERVER_URL/agent")
+if [[ "$RESP_AGENT" == *"CustomTester/1.0"* ]]; then
+    echo -e "${GREEN}✔ PASS: Header value extracted and echoed back${NC}"
+else
+    echo -e "${RED}✘ FAIL: Expected agent info to be visible, got '$RESP_AGENT'${NC}"
+fi
+echo ""
+
