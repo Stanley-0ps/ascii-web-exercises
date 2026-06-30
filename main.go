@@ -23,6 +23,7 @@ func main() {
 	http.HandleFunc("/v2", v2Handler)
 	http.HandleFunc("/method-inspector", methodInspectorHandler)
 	http.HandleFunc("/echo", echoHandler)
+	http.HandleFunc("/headers", headersHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -171,4 +172,20 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write(body)
+}
+
+func headersHandler(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("X-Custom-Token")
+	contentType := r.Header.Get("content-Type")
+
+	if token == "" {
+		http.Error(w, "X-Custom-Token is missing", http.StatusBadRequest)
+		return
+	}
+
+	if contentType == "" {
+		contentType = "not provided"
+	}
+
+	fmt.Fprintf(w, "Token recieved: %s\nContent-Type: %s", token, contentType)
 }
