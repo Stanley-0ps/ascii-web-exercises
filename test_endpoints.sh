@@ -156,3 +156,11 @@ R2=$(curl -s -X POST -d "Hello Go" "$SERVER_URL/echo")
 if [[ "$R2" == *"Hello Go"* ]]; then echo -e "${GREEN}✔ PASS: body echoed${NC}"; else echo -e "${RED}✘ FAIL: got '$R2'${NC}"; fi
 R2G=$(curl -s -o /dev/null -w "%{http_code}" -X GET "$SERVER_URL/echo")
 if [ "$R2G" == "405" ]; then echo -e "${GREEN}✔ PASS: GET blocked with 405${NC}"; else echo -e "${RED}✘ FAIL: expected 405 got $R2G${NC}"; fi
+
+
+# Exercise 3: /headers
+echo -e "\n${BLUE}[Exercise 3: /headers]${NC}"
+R3=$(curl -s -H "X-Custom-Token: abc123" "$SERVER_URL/headers")
+if [[ "$R3" == *"abc123"* ]]; then echo -e "${GREEN}✔ PASS: header echoed${NC}"; else echo -e "${RED}✘ FAIL: got '$R3'${NC}"; fi
+R3E=$(curl -s "$SERVER_URL/headers")
+if [[ "$R3E" == *"missing"* || "$R3E" == *"Missing"* ]]; then echo -e "${GREEN}✔ PASS: missing header handled${NC}"; else echo -e "${RED}✘ FAIL: got '$R3E'${NC}"; fi
