@@ -24,6 +24,7 @@ func main() {
 	http.HandleFunc("/method-inspector", methodInspectorHandler)
 	http.HandleFunc("/echo", echoHandler)
 	http.HandleFunc("/headers", headersHandler)
+	http.HandleFunc("/form", formHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -174,6 +175,7 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
+// r.Header.Get() returns an empty string if the requested header is not present.
 func headersHandler(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("X-Custom-Token")
 	contentType := r.Header.Get("content-Type")
@@ -188,4 +190,32 @@ func headersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "Token recieved: %s\nContent-Type: %s", token, contentType)
+}
+
+// formHandler parses and validates a URL-encoded form submission
+func formHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Failed to parse form", http.StatusBadRequest)
+		return
+	}
+	username := r.FormValue("username")
+	language := r.FormValue("language")
+
+	if username == "" {
+		http.Error(w, "username is required", http.StatusBadRequest)
+		return
+	}
+
+	if language == "" {
+		http.Error(w, "language is required", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "Hello %s, you are coding in %s!", username, language)
 }
