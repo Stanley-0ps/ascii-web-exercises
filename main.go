@@ -27,10 +27,29 @@ func main() {
 	http.HandleFunc("/form", formHandler)
 	http.HandleFunc("/status", statusHandler)
 
+	// fmt.Println("Server is running on http://localhost:8080")
+
+	// // start the HTTP Server
+	// err := http.ListenAndServe(":8080", nil)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// create the API sub-router
+	apiMux := http.NewServeMux()
+
+	apiMux.HandleFunc("/v1/ping", pingHandler)
+	apiMux.HandleFunc("/v1/greet", greetHandler)
+
+	// create the main router
+	mainMux := http.NewServeMux()
+
+	//mount the API router under /api/
+	mainMux.Handle("/api/", http.StripPrefix("/api", apiMux))
+
 	fmt.Println("Server is running on http://localhost:8080")
 
-	// start the HTTP Server
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", mainMux)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -244,4 +263,17 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(code)                               // send the status code
 	fmt.Fprintf(w, "Responding with status %d", code) // writing the response body
+}
+
+// "/api/" matches every path beginning with "/api/", while "/api" matches only the exact "/api" path.
+// Without http.StripPrefix("/api", apiMux), apiMux would receive "/api/v1/..." instead of "/v1/..."
+// http.ListenAndServe accepts any value that implements the Handler interface, and *http.ServeMux does because it has a ServeHTTP method.
+
+func greetHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+
+	if name == "" {
+		name = "stranger"
+	}
+	fmt.Fprintf(w, "Greetings %s!", name)
 }
