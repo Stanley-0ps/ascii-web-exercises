@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/dashboard", dashboardHandler)
 	http.HandleFunc("/legacy", legacyHandler)
 	http.HandleFunc("/v2", v2Handler)
+	http.HandleFunc("/method-inspector", methodInspectorHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -143,4 +144,9 @@ func legacyHandler(w http.ResponseWriter, r *http.Request) {
 // v2 serves as the new version of the endpoint
 func v2Handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "welcome to version 2")
+}
+
+
+func methodInspectorHandler(w http.ResponseWriter, r *http.Request){
+	fmt.Fprintf(w, "you made a %s request", r.Method)
 }
