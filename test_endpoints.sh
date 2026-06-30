@@ -133,3 +133,18 @@ fi
 
 echo -e "\n${BLUE}=== Testing Complete ===${NC}"
 
+#!/bin/bash
+SERVER_URL="http://localhost:8080"
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0;0m'
+
+echo -e "${BLUE}=== HTTP Resurgence Verification ===${NC}\n"
+
+# Exercise 1: /method-inspector
+echo -e "${BLUE}[Exercise 1: /method-inspector]${NC}"
+R1=$(curl -s -X GET "$SERVER_URL/method-inspector")
+if [[ "$R1" == *"GET"* ]]; then echo -e "${GREEN}✔ PASS: GET detected${NC}"; else echo -e "${RED}✘ FAIL: got '$R1'${NC}"; fi
+R1P=$(curl -s -X POST "$SERVER_URL/method-inspector")
+if [[ "$R1P" == *"POST"* ]]; then echo -e "${GREEN}✔ PASS: POST detected${NC}"; else echo -e "${RED}✘ FAIL: got '$R1P'${NC}"; fi
