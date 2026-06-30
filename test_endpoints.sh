@@ -164,3 +164,11 @@ R3=$(curl -s -H "X-Custom-Token: abc123" "$SERVER_URL/headers")
 if [[ "$R3" == *"abc123"* ]]; then echo -e "${GREEN}✔ PASS: header echoed${NC}"; else echo -e "${RED}✘ FAIL: got '$R3'${NC}"; fi
 R3E=$(curl -s "$SERVER_URL/headers")
 if [[ "$R3E" == *"missing"* || "$R3E" == *"Missing"* ]]; then echo -e "${GREEN}✔ PASS: missing header handled${NC}"; else echo -e "${RED}✘ FAIL: got '$R3E'${NC}"; fi
+
+
+# Exercise 4: /form
+echo -e "\n${BLUE}[Exercise 4: /form]${NC}"
+R4=$(curl -s -X POST -d "username=Ada&language=Go" "$SERVER_URL/form")
+if [[ "$R4" == *"Ada"* && "$R4" == *"Go"* ]]; then echo -e "${GREEN}✔ PASS: form parsed${NC}"; else echo -e "${RED}✘ FAIL: got '$R4'${NC}"; fi
+R4E=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d "username=&language=Go" "$SERVER_URL/form")
+if [ "$R4E" == "400" ]; then echo -e "${GREEN}✔ PASS: empty field returns 400${NC}"; else echo -e "${RED}✘ FAIL: expected 400 got $R4E${NC}"; fi
