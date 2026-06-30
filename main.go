@@ -25,6 +25,7 @@ func main() {
 	http.HandleFunc("/echo", echoHandler)
 	http.HandleFunc("/headers", headersHandler)
 	http.HandleFunc("/form", formHandler)
+	http.HandleFunc("/status", statusHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -218,4 +219,29 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "Hello %s, you are coding in %s!", username, language)
+}
+
+// If w.Write() is called before w.WriteHeader(), Go automatically sends a
+// 200 OK response and later calls to WriteHeader() have no effect.
+func statusHandler(w http.ResponseWriter, r *http.Request) {
+	// read and validate the code query parameter
+	codeStr := r.URL.Query().Get("code")
+	if codeStr == "" {
+		http.Error(w, "code parameter is required", http.StatusBadRequest)
+		return
+	}
+	code, err := strconv.Atoi(codeStr)
+
+	if err != nil {
+		http.Error(w, "code must be a valid integer", http.StatusBadRequest)
+		return
+	}
+
+	if code < 100 || code > 599 {
+		http.Error(w, "code must be a valid HTTP status code(100-599)", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(code)                               // send the status code
+	fmt.Fprintf(w, "Responding with status %d", code) // writing the response body
 }
