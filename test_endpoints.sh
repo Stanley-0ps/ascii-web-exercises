@@ -180,3 +180,10 @@ R5=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/status?code=404")
 if [ "$R5" == "404" ]; then echo -e "${GREEN}✔ PASS: 404 returned${NC}"; else echo -e "${RED}✘ FAIL: expected 404 got $R5${NC}"; fi
 R5B=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/status?code=banana")
 if [ "$R5B" == "400" ]; then echo -e "${GREEN}✔ PASS: bad code returns 400${NC}"; else echo -e "${RED}✘ FAIL: expected 400 got $R5B${NC}"; fi
+
+# Exercise 6: /api/v1/greet (ServeMux subtree)
+echo -e "\n${BLUE}[Exercise 6: /api/v1/greet]${NC}"
+R6=$(curl -s "$SERVER_URL/api/v1/greet?name=Zion")
+if [[ "$R6" == *"Zion"* ]]; then echo -e "${GREEN}✔ PASS: subtree route greet works${NC}"; else echo -e "${RED}✘ FAIL: got '$R6'${NC}"; fi
+R6P=$(curl -s "$SERVER_URL/api/v1/ping")
+if [[ "$R6P" == *"pong"* ]]; then echo -e "${GREEN}✔ PASS: subtree route ping works${NC}"; else echo -e "${RED}✘ FAIL: got '$R6P'${NC}"; fi
