@@ -22,6 +22,7 @@ func main() {
 	http.HandleFunc("/legacy", legacyHandler)
 	http.HandleFunc("/v2", v2Handler)
 	http.HandleFunc("/method-inspector", methodInspectorHandler)
+	http.HandleFunc("/echo", echoHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")
 
@@ -135,7 +136,6 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Welcome to the secure dashboard!")
 }
 
-
 // legacyHandler permanently redirects clients to the /v2 route
 func legacyHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/v2", http.StatusMovedPermanently)
@@ -146,7 +146,29 @@ func v2Handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "welcome to version 2")
 }
 
-
-func methodInspectorHandler(w http.ResponseWriter, r *http.Request){
+// methodInspectorHandler reports the http method used for the request
+func methodInspectorHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "you made a %s request", r.Method)
+}
+
+// echoHandler reads request body and sends it back unchanged
+func echoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	if len(body) == 0 {
+		http.Error(w, "body cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write(body)
 }
